@@ -4,8 +4,7 @@ using System.Text;
 
 namespace Roguelike
 {
-    public class PowerUp : IAgent
+    class PlayerMovement
     {
-
     }
 }

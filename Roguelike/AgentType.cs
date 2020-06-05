@@ -7,8 +7,13 @@ namespace Roguelike
     public enum AgentType
     {
         Player,
-        Enemy,
+        SmallEnemy,
+        BigEnemy,
         PowerUp,
-        Obstacle
+        Obstacle,
+        SmallPowerUp,
+        MediumPowerUp,
+        BigPowerUp,
+        Exit,
     }
 }
