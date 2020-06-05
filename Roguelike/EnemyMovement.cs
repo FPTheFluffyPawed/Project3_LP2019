@@ -4,8 +4,7 @@ using System.Text;
 
 namespace Roguelike
 {
-    public interface IAgent
+    class EnemyMovement
     {
-        void Move() { }
     }
 }
