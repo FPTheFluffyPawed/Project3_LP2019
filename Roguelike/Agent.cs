@@ -13,6 +13,9 @@ namespace Roguelike
         // Use this just for reference to the methods.
         private World world;
 
+        // Movement.
+        private AbstractMovement moveBehaviour;
+
         public Agent(Position pos, AgentType type, World world)
         {
             Pos = pos;
@@ -22,7 +25,8 @@ namespace Roguelike
             switch(type)
             {
                 case AgentType.Player:
-                    HP = 40;
+                    HP = (world.XDim * world.YDim) / 4;
+                    moveBehaviour = new PlayerMovement(world);
                     break;
                 case AgentType.SmallEnemy:
                     HP = 5;
@@ -30,19 +34,28 @@ namespace Roguelike
                 case AgentType.BigEnemy:
                     HP = 10;
                     break;
+                default:
+                    HP = 0;
+                    break;
             }
+
+            // Add the agent to the world!
+            world.AddAgent(this);
         }
 
         public void PlayTurn()
         {
-            Random random = new Random();
-            Position destination = new Position(random.Next(0, 5), random.Next(0, 5));
+            Position destination = moveBehaviour.WhereToMove(this);
 
             if(!world.IsOccupied(destination))
             {
                 world.MoveAgent(this, destination);
 
                 Pos = destination;
+            }
+            else
+            {
+                // The destination we tried to move is occupied, soooo...
             }
         }
     }

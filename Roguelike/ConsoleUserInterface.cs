@@ -40,6 +40,7 @@ namespace Roguelike
 
             while(loop)
             {
+                Console.Clear();
                 Console.WriteLine("- A Roguelike Game -");
                 Console.WriteLine("1. New Game");
                 Console.WriteLine("2. High Score");
@@ -75,13 +76,17 @@ namespace Roguelike
 
         private void PlayGame()
         {
-            Console.WriteLine("\n*** LAUNCHING GAME... ***");
-            game.Play();
-            Console.WriteLine("*** CLOSING GAME... ***\n");
+            Console.Clear();
+            Console.WriteLine("\n*** LAUNCHING GAME... ***\n");
+            game.NewGame();
+            Console.WriteLine("\n*** CLOSING GAME... ***\n");
+            Console.WriteLine("Press any key to return...\n");
+            Console.ReadKey(true);
         }
 
         private void ShowScores()
         {
+            Console.Clear();
             // Read from file and show scores
             Console.WriteLine("Press any key to return...\n");
             Console.ReadKey(true);
@@ -95,7 +100,8 @@ namespace Roguelike
 
         private void ShowCredits()
         {
-            Console.WriteLine("\nThe creators of this program are:");
+            Console.Clear();
+            Console.WriteLine("The creators of this program are:");
             Console.WriteLine("- Diogo Henriques \t(X)");
             Console.WriteLine("- Inácio Amerio \t(21803493)");
             Console.WriteLine("- João Dias \t\t(X)");
@@ -114,6 +120,35 @@ namespace Roguelike
         private void ErrorOption()
         {
             Console.WriteLine("\nInsert a valid option!\n");
+            Console.WriteLine("Press any key to return...\n");
+            Console.ReadKey(true);
+        }
+
+        public void RenderWorld(IReadOnlyWorld world)
+        {
+            Console.SetCursorPosition(0, 0);
+            for(int x = 0; x < world.XDim; x++)
+            {
+                for(int y = 0; y < world.YDim; y++)
+                {
+                    Position pos = new Position(x, y);
+
+                    if(world.IsOccupied(pos))
+                    {
+                        Agent agent = world.GetAgentAt(pos);
+
+                        if (agent.Type == AgentType.Player)
+                            Console.Write(" P ");
+                        else if (agent.Type == AgentType.SmallEnemy)
+                            Console.Write(" e ");
+                    }
+                    else
+                    {
+                        Console.Write(" . ");
+                    }
+                }
+                Console.WriteLine();
+            }
         }
     }
 }
