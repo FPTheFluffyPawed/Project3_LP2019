@@ -40,6 +40,8 @@ namespace Roguelike
 
         private void Play()
         {
+            Console.Clear();
+
             gameOver = false;
 
             // Setup the level for the first time...

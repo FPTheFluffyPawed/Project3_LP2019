@@ -120,6 +120,8 @@ namespace Roguelike
         private void ErrorOption()
         {
             Console.WriteLine("\nInsert a valid option!\n");
+            Console.WriteLine("Press any key to return...\n");
+            Console.ReadKey(true);
         }
 
         public void RenderWorld(IReadOnlyWorld world)
