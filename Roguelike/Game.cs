@@ -8,7 +8,7 @@ namespace Roguelike
     {
         private ConsoleUserInterface ui;
 
-        public Game()
+        public Game(int x, int y)
         {
             ui = new ConsoleUserInterface(this);
         }
