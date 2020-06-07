@@ -9,7 +9,6 @@ namespace Roguelike
         Player,
         SmallEnemy,
         BigEnemy,
-        PowerUp,
         Obstacle,
         SmallPowerUp,
         MediumPowerUp,

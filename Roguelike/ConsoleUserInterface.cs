@@ -141,6 +141,14 @@ namespace Roguelike
                             Console.Write(" P ");
                         else if (agent.Type == AgentType.SmallEnemy)
                             Console.Write(" e ");
+                        else if (agent.Type == AgentType.BigEnemy)
+                            Console.Write(" E ");
+                        else if (agent.Type == AgentType.SmallPowerUp)
+                            Console.Write(" q ");
+                        else if (agent.Type == AgentType.MediumPowerUp)
+                            Console.Write(" p ");
+                        else if (agent.Type == AgentType.BigPowerUp)
+                            Console.Write(" Q ");
                     }
                     else
                     {
