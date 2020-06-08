@@ -12,6 +12,8 @@ namespace Roguelike
 
         bool IsOccupied(Position pos);
 
+        bool IsOutOfBounds(Position pos);
+
         Agent GetAgentAt(Position pos);
 
         void Clear();
@@ -19,6 +21,7 @@ namespace Roguelike
         Position VectorBetween(Position pos1, Position pos2);
 
         Position GetNeighbor(Position pos, Direction dir);
+
         Position GetNeighbor(Position pos, Position directionVector);
     }
 }
