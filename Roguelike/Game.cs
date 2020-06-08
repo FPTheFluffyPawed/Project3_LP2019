@@ -10,7 +10,7 @@ namespace Roguelike
 
         private IReadOnlyWorld world;
 
-        private int turn, level;
+        private float turn, level;
 
         private bool gameOver;
 
@@ -18,12 +18,13 @@ namespace Roguelike
 
         private List<Agent> agents;
 
-        public Game(int x, int y)
+        public Game(int x, int y) 
         {
             ui = new ConsoleUserInterface(this);
             world = new World(x, y);
             random = new Random();
             agents = new List<Agent>();
+            level = float.PositiveInfinity;
         }
 
         public void Start()
@@ -40,45 +41,68 @@ namespace Roguelike
 
         private void Play()
         {
+
             Console.Clear();
 
             gameOver = false;
-
-            // Setup the level for the first time...
-            PlaceAgent(AgentType.Player);
-
-            for(int i = 0; i < 5; i++)
+            for (int i = 0; i < level; i++)
             {
-                PlaceAgent(AgentType.SmallEnemy);
+                //Console.WriteLine($"YOU ARE IN LEVEL {0} !!!", i);
+
+                // Setup the level for the first time...
+                PlaceAgent(AgentType.Player);
+                for (int j = 0;  j < 3 + i; j++)
+                {
+                    if (ProbabilityOfBoss(i, random))
+                    {
+                        PlaceAgent(AgentType.BigEnemy);
+                    }
+                    else
+                        PlaceAgent(AgentType.SmallEnemy);
+                }
+
+                for (int j = 3; j > i; j--)
+                {
+                    if (ProbabilityOfPowerup(i, random) == 2)
+                    {
+                        PlaceAgent(AgentType.MediumPowerUp);
+                    }
+                    if (ProbabilityOfPowerup(i, random) == 3)
+                    {
+                        PlaceAgent(AgentType.BigPowerUp);
+                    }
+                    else
+                        PlaceAgent(AgentType.SmallPowerUp);
+                }
+                    
+                ui.RenderWorld(world);
+
+                // Run through all positions and check
+                foreach (Agent a in agents)
+                {
+                    if (a.Type == AgentType.Player)
+                        a.PlayTurn();
+                }
+                ui.RenderWorld(world);
+
+
+                // and then start the loop.
+
+                // This will clear any past games (if they exist) and set it up.
+
+                // Start playing the game from here on out!
+                // Console.WriteLine("\nGame!\n");
+
+                // Game Loop
+                // Render board
+                // Check if player is dead (to then break out of the loop)
+                // Check if the player is on the exit level tile
+                // Play out turns
+
+                // When the player enters the exit tile, immediately setup a new level
+                // and then it plays out like normally, except it'll be the player's turn
+                gameOver = true;
             }
-
-            ui.RenderWorld(world);
-
-            // Run through all positions and check
-            foreach (Agent a in agents)
-            {
-                if (a.Type == AgentType.Player)
-                    a.PlayTurn();
-            }
-            ui.RenderWorld(world);
-
-
-            // and then start the loop.
-
-            // This will clear any past games (if they exist) and set it up.
-
-            // Start playing the game from here on out!
-            // Console.WriteLine("\nGame!\n");
-
-            // Game Loop
-            // Render board
-            // Check if player is dead (to then break out of the loop)
-            // Check if the player is on the exit level tile
-            // Play out turns
-
-            // When the player enters the exit tile, immediately setup a new level
-            // and then it plays out like normally, except it'll be the player's turn
-            gameOver = true;
         }
 
         private void PlaceAgent(AgentType type)
@@ -151,6 +175,47 @@ namespace Roguelike
         private void DifficultyScale()
         {
 
+        }
+        private bool ProbabilityOfBoss(int level, Random random)
+        {
+            int divider = 10 - level;
+
+            if (divider <= 0)
+            {
+                divider = 0;
+            }
+            float ProbofBoss = 1f / divider;
+            float ProbTry = 1f / random.Next(1,level + 1);
+
+            if (ProbTry <= ProbofBoss)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private int ProbabilityOfPowerup(int level, Random random)
+        {
+            int bigDivider = level + 3;
+            int medDivider = level + 2;
+
+            float probOfMed = 1f/medDivider;
+            float probOfBig = 1f/bigDivider;
+
+            float probTry = 1f / random.Next(1, level + 1);
+
+            if (probOfBig >= probTry)
+            {
+                //returns the big powerup
+                return 3;
+            }
+            if (probOfMed >= probTry)
+            {
+                //returns the medium powerup
+                return 2;
+            }
+            //returns the small powerup
+            return 1;
         }
     }
 }
