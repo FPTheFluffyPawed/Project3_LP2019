@@ -49,9 +49,22 @@ namespace Roguelike
         {
             Position destination;
 
+            // Keep asking for a position!
             do
             {
                 destination = moveBehaviour.WhereToMove(this);
+
+                // Since the player is forced to move, we check if he ran into
+                // something, and give him a retry to move.
+                if(!world.IsOutOfBounds(destination))
+                    if(world.IsOccupied(destination))
+                    {
+                        if (world.GetAgentAt(destination).Type == AgentType.Obstacle
+                        || world.GetAgentAt(destination).Type == AgentType.SmallEnemy
+                        || world.GetAgentAt(destination).Type == AgentType.BigEnemy)
+                        destination = new Position(-1, -1);
+                    }
+
             } while (world.IsOutOfBounds(destination));
 
             if (!world.IsOccupied(destination))
@@ -72,6 +85,7 @@ namespace Roguelike
                 {
                     other.HP -= HP;
                 }
+                // If we're the player and we enter the exit, change level!
                 else if (Type == AgentType.Player && other.Type == AgentType.Exit)
                 {
                     // Change level! Probably call world's level change method?
@@ -91,11 +105,6 @@ namespace Roguelike
             // Always reduce the player by 1 HP when he moves.
             if (Type == AgentType.Player)
                 HP--;
-        }
-
-        public override string ToString()
-        {
-            return $"HP = {HP}";
         }
     }
 }
