@@ -56,6 +56,7 @@ ______                       _     _ _
             __/ |                            
             |___/ ");
                 SetDefaultColor();
+
                 Console.WriteLine("1. New Game");
                 Console.WriteLine("2. High Score");
                 Console.WriteLine("3. Instructions");
@@ -92,13 +93,17 @@ ______                       _     _ _
 
         private void PlayGame()
         {
-            Console.WriteLine("\n*** LAUNCHING GAME... ***");
-            game.Play();
-            Console.WriteLine("*** CLOSING GAME... ***\n");
+            Console.Clear();
+            Console.WriteLine("\n*** LAUNCHING GAME... ***\n");
+            game.NewGame();
+            Console.WriteLine("\n*** CLOSING GAME... ***\n");
+            Console.WriteLine("Press any key to return...\n");
+            Console.ReadKey(true);
         }
 
         private void ShowScores()
         {
+            Console.Clear();
             // Read from file and show scores
             Console.WriteLine("Press any key to return...\n");
             Console.ReadKey(true);
@@ -141,6 +146,7 @@ ______                       _     _ _
 
         private void ShowCredits()
         {
+
             Console.WriteLine(@"
  _____              _ _ _       
 /  __ \            | (_) |      
@@ -167,6 +173,43 @@ ______                       _     _ _
         private void ErrorOption()
         {
             Console.WriteLine("\nInsert a valid option!\n");
+            Console.WriteLine("Press any key to return...\n");
+            Console.ReadKey(true);
+        }
+
+        public void RenderWorld(IReadOnlyWorld world)
+        {
+            Console.SetCursorPosition(0, 0);
+            for(int x = 0; x < world.XDim; x++)
+            {
+                for(int y = 0; y < world.YDim; y++)
+                {
+                    Position pos = new Position(x, y);
+
+                    if(world.IsOccupied(pos))
+                    {
+                        Agent agent = world.GetAgentAt(pos);
+
+                        if (agent.Type == AgentType.Player)
+                            Console.Write(" P ");
+                        else if (agent.Type == AgentType.SmallEnemy)
+                            Console.Write(" e ");
+                        else if (agent.Type == AgentType.BigEnemy)
+                            Console.Write(" E ");
+                        else if (agent.Type == AgentType.SmallPowerUp)
+                            Console.Write(" q ");
+                        else if (agent.Type == AgentType.MediumPowerUp)
+                            Console.Write(" p ");
+                        else if (agent.Type == AgentType.BigPowerUp)
+                            Console.Write(" Q ");
+                    }
+                    else
+                    {
+                        Console.Write(" . ");
+                    }
+                }
+                Console.WriteLine();
+            }
         }
 
         private void SetColor(ConsoleColor fgColor, ConsoleColor bgColor)
