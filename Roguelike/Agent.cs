@@ -22,7 +22,7 @@ namespace Roguelike
             Type = type;
             this.world = world;
 
-            switch(type)
+            switch (type)
             {
                 case AgentType.Player:
                     HP = (world.XDim * world.YDim) / 4;
@@ -30,9 +30,11 @@ namespace Roguelike
                     break;
                 case AgentType.SmallEnemy:
                     HP = 5;
+                    moveBehaviour = new EnemyMovement(world);
                     break;
                 case AgentType.BigEnemy:
                     HP = 10;
+                    moveBehaviour = new EnemyMovement(world);
                     break;
                 default:
                     HP = 0;
@@ -45,9 +47,14 @@ namespace Roguelike
 
         public void PlayTurn()
         {
-            Position destination = moveBehaviour.WhereToMove(this);
+            Position destination;
 
-            if(!world.IsOccupied(destination))
+            do
+            {
+                destination = moveBehaviour.WhereToMove(this);
+            } while (world.IsOutOfBounds(destination));
+
+            if (!world.IsOccupied(destination))
             {
                 world.MoveAgent(this, destination);
 
@@ -56,7 +63,39 @@ namespace Roguelike
             else
             {
                 // The destination we tried to move is occupied, soooo...
+                // Get the agent at that destination.
+                Agent other = world.GetAgentAt(destination);
+
+                // If the current agent is an enemy, apply its health as damage to the player.
+                if ((Type == AgentType.SmallEnemy && other.Type == AgentType.Player)
+                    || (Type == AgentType.BigEnemy && other.Type == AgentType.Player))
+                {
+                    other.HP -= HP;
+                }
+                else if (Type == AgentType.Player && other.Type == AgentType.Exit)
+                {
+                    // Change level! Probably call world's level change method?
+                }
+                else if ((Type == AgentType.Player && other.Type == AgentType.SmallPowerUp)
+                    || (Type == AgentType.Player && other.Type == AgentType.MediumPowerUp)
+                    || (Type == AgentType.Player && other.Type == AgentType.BigPowerUp))
+                {
+                    HP += other.HP;
+                }
+                else
+                {
+                    // Do nothing.
+                }
             }
+
+            // Always reduce the player by 1 HP when he moves.
+            if (Type == AgentType.Player)
+                HP--;
+        }
+
+        public override string ToString()
+        {
+            return $"HP = {HP}";
         }
     }
 }
