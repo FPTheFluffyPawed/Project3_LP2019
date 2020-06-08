@@ -139,6 +139,8 @@ namespace Roguelike
 
                         if (agent.Type == AgentType.Player)
                             Console.Write(" P ");
+                        else if (agent.Type == AgentType.Exit)
+                            Console.Write(" O ");
                         else if (agent.Type == AgentType.SmallEnemy)
                             Console.Write(" e ");
                         else if (agent.Type == AgentType.BigEnemy)
@@ -157,6 +159,14 @@ namespace Roguelike
                 }
                 Console.WriteLine();
             }
+            RenderInterface(world);
+        }
+
+        private void RenderInterface(IReadOnlyWorld world)
+        {
+            Console.SetCursorPosition(0 + world.XDim * 3, 0);
+            Console.Write("Your health: " + game.PlayerHP + " HP.");
+            Console.SetCursorPosition(0, world.YDim);
         }
     }
 }

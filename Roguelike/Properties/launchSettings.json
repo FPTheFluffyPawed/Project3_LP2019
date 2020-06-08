@@ -2,7 +2,7 @@
   "profiles": {
     "Roguelike": {
       "commandName": "Project",
-      "commandLineArgs": "-c 5 -r 5"
+      "commandLineArgs": "-c 12 -r 12"
     }
   }
 }
