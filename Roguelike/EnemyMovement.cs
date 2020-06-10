@@ -16,33 +16,41 @@ namespace Roguelike
         {
             Thread.Sleep(500);
 
+            // Target.
+            Agent target = null;
+
+            // Check if we found the player.
+            bool foundPlayer = false;
+
             // Vector.
             Position vector = default(Position);
 
             // Aux.
             Position currentPosition;
 
-            Random random = new Random();
-            
-            Direction direction;
-            
-            switch (random.Next(3))
-            {
-                case 0:
-                    direction = Direction.Up;
-                    break;
-                case 1:
-                    direction = Direction.Down;
-                    break;
-                case 2:
-                    direction = Direction.Left;
-                    break;
-                default:
-                    direction = Direction.Right;
-                    break;
-            }
+            for(int x = 0; x < world.XDim && !foundPlayer; x++)
+                for(int y = 0; y < world.YDim && !foundPlayer; y++)
+                {
+                    currentPosition = new Position(x, y);
 
-            return world.GetNeighbor(agent.Pos, direction);
+                    if(world.IsOccupied(currentPosition))
+                    {
+                        target = world.GetAgentAt(currentPosition);
+
+                        if(target.Type == AgentType.Player)
+                        {
+                            vector = world.VectorBetween(agent.Pos, currentPosition);
+
+                            foundPlayer = true;
+                        }
+                    }
+                }
+
+            if (foundPlayer)
+                return world.GetNeighbor(agent.Pos, vector);
+
+            // Shouldn't get here.
+            return agent.Pos;
         }
     }
 }
