@@ -10,6 +10,8 @@ namespace Roguelike
 
         int YDim { get; }
 
+        bool End { get; }
+
         bool IsOccupied(Position pos);
 
         bool IsOutOfBounds(Position pos);
@@ -18,6 +20,7 @@ namespace Roguelike
 
         void Clear();
 
+        void LevelClear();
         Position VectorBetween(Position pos1, Position pos2);
 
         Position GetNeighbor(Position pos, Direction dir);

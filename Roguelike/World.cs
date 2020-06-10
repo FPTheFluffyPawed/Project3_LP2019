@@ -11,6 +11,8 @@ namespace Roguelike
 
         public int YDim => world.GetLength(1);
 
+        public bool End { get; set; }
+
         private Agent[,] world;
 
         public World(int x, int y)
@@ -24,6 +26,22 @@ namespace Roguelike
                 for(int y = 0; y < YDim; y++)
                 {
                     world[x, y] = null;
+                }
+        }
+
+        public void LevelClear()
+        {
+            for (int x = 0; x < XDim; x++)
+                for (int y = 0; y < YDim; y++)
+                {
+                    Position pos = new Position(x,y);
+                    if (IsOccupied(pos))
+                    {
+                        if (GetAgentAt(pos).Type != AgentType.Player)
+                        {
+                            world[x, y] = null;
+                        }                  
+                    }
                 }
         }
 
