@@ -69,9 +69,11 @@ namespace Roguelike
                     {
                         if(a.Type == AgentType.Player)
                         {
-                            a.PlayTurn();
-                            ui.RenderWorld(world);
-                            a.PlayTurn();
+                            for(int i = 0; i < 2; i++)
+                            {
+                                a.PlayTurn();
+                                ui.RenderWorld(world);
+                            }
                         }
                         else
                             a.PlayTurn();
