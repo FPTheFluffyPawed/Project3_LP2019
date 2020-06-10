@@ -219,6 +219,10 @@ ______                       _     _ _
         {
             Console.SetCursorPosition(0 + world.XDim * 3, 0);
             Console.Write("Your health: " + game.PlayerHP + " HP.");
+
+            Console.SetCursorPosition(0 + world.XDim * 3, 1);
+            Console.Write("Current level : " + game.Level);
+
             Console.SetCursorPosition(0, world.YDim);
         }
 

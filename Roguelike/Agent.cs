@@ -36,6 +36,15 @@ namespace Roguelike
                     HP = 10;
                     moveBehaviour = new EnemyMovement(world);
                     break;
+                case AgentType.SmallPowerUp:
+                    HP = 4;
+                    break;
+                case AgentType.MediumPowerUp:
+                    HP = 8;
+                    break;
+                case AgentType.BigPowerUp:
+                    HP = 16;
+                    break;
                 default:
                     HP = 0;
                     break;
@@ -89,12 +98,17 @@ namespace Roguelike
                 else if (Type == AgentType.Player && other.Type == AgentType.Exit)
                 {
                     // Change level! Probably call world's level change method?
+                    world.End = true;
                 }
                 else if ((Type == AgentType.Player && other.Type == AgentType.SmallPowerUp)
                     || (Type == AgentType.Player && other.Type == AgentType.MediumPowerUp)
                     || (Type == AgentType.Player && other.Type == AgentType.BigPowerUp))
                 {
                     HP += other.HP;
+                    world.MoveAgent(this, destination);
+
+                    Pos = destination;
+
                 }
                 else
                 {
@@ -105,6 +119,17 @@ namespace Roguelike
             // Always reduce the player by 1 HP when he moves.
             if (Type == AgentType.Player)
                 HP--;
+        }
+        public void ResetPlayerPos()
+        {
+            world.End = false;
+            if (Type == AgentType.Player)
+            {
+                Random random = new Random();
+                Position pos = new Position(random.Next(world.XDim), 0);
+                world.MoveAgent(this, pos);
+                Pos = pos;
+            }
         }
     }
 }
