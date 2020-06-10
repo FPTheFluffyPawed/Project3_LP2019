@@ -6,6 +6,8 @@ namespace Roguelike
 {
     public class Game
     {
+        public int PlayerHP => agents.Find(a => a.Type == AgentType.Player).HP;
+
         private ConsoleUserInterface ui;
 
         private IReadOnlyWorld world;
@@ -24,7 +26,7 @@ namespace Roguelike
             world = new World(x, y);
             random = new Random();
             agents = new List<Agent>();
-            level = float.PositiveInfinity;
+            level = 1;
         }
 
         public void Start()
@@ -45,64 +47,56 @@ namespace Roguelike
             Console.Clear();
 
             gameOver = false;
-            for (int i = 0; i < level; i++)
+
+            PlaceAgent(AgentType.Player);
+            PlaceAgent(AgentType.Exit);
+            PlaceAgent(AgentType.SmallEnemy);
+            PlaceAgent(AgentType.SmallEnemy);
+            PlaceAgent(AgentType.SmallEnemy);
+
+            //GenerateLevel();
+
+            ui.RenderWorld(world);
+
+            while(true)
             {
-                //Console.WriteLine($"YOU ARE IN LEVEL {0} !!!", i);
-
-                // Setup the level for the first time...
-                PlaceAgent(AgentType.Player);
-                for (int j = 0;  j < 3 + i; j++)
-                {
-                    if (ProbabilityOfBoss(i, random))
-                    {
-                        PlaceAgent(AgentType.BigEnemy);
-                    }
-                    else
-                        PlaceAgent(AgentType.SmallEnemy);
-                }
-
-                for (int j = 3; j > i; j--)
-                {
-                    if (ProbabilityOfPowerup(i, random) == 2)
-                    {
-                        PlaceAgent(AgentType.MediumPowerUp);
-                    }
-                    if (ProbabilityOfPowerup(i, random) == 3)
-                    {
-                        PlaceAgent(AgentType.BigPowerUp);
-                    }
-                    else
-                        PlaceAgent(AgentType.SmallPowerUp);
-                }
-                    
-                ui.RenderWorld(world);
-
-                // Run through all positions and check
+                // Run through all agents and check
                 foreach (Agent a in agents)
                 {
-                    if (a.Type == AgentType.Player)
-                        a.PlayTurn();
+                    if (a.Type == AgentType.Player
+                        || a.Type == AgentType.BigEnemy
+                        || a.Type == AgentType.SmallEnemy)
+                    {
+                        if(a.Type == AgentType.Player)
+                        {
+                            a.PlayTurn();
+                            ui.RenderWorld(world);
+                            a.PlayTurn();
+                        }
+                        else
+                            a.PlayTurn();
+                    }
+                    ui.RenderWorld(world);
                 }
                 ui.RenderWorld(world);
-
-
-                // and then start the loop.
-
-                // This will clear any past games (if they exist) and set it up.
-
-                // Start playing the game from here on out!
-                // Console.WriteLine("\nGame!\n");
-
-                // Game Loop
-                // Render board
-                // Check if player is dead (to then break out of the loop)
-                // Check if the player is on the exit level tile
-                // Play out turns
-
-                // When the player enters the exit tile, immediately setup a new level
-                // and then it plays out like normally, except it'll be the player's turn
-                gameOver = true;
             }
+
+            // and then start the loop.
+
+            // This will clear any past games (if they exist) and set it up.
+
+            // Start playing the game from here on out!
+            // Console.WriteLine("\nGame!\n");
+
+            // Game Loop
+            // Render board
+            // Check if player is dead (to then break out of the loop)
+            // Check if the player is on the exit level tile
+            // Play out turns
+
+            // When the player enters the exit tile, immediately setup a new level
+            // and then it plays out like normally, except it'll be the player's turn
+            gameOver = true;
         }
 
         private void PlaceAgent(AgentType type)
@@ -142,11 +136,11 @@ namespace Roguelike
                     {
                         pos = new Position(
                             random.Next(world.XDim),
-                            world.YDim);
+                            world.YDim - 1);
                     } while (world.IsOccupied(pos));
 
                     agent = new Agent(pos, type, (World)world);
-                    agents.Add(agent);
+                    //agents.Add(agent);
                     break;
                 default:
                     do
@@ -162,9 +156,37 @@ namespace Roguelike
             }
         }
 
-        private void SetupLevel()
+        private void GenerateLevel()
         {
+            for (int i = 0; i < level; i++)
+            {
+                Console.WriteLine($"YOU ARE IN LEVEL {0} !!!", i);
 
+                // Setup the level for the first time...
+                for (int j = 0; j < 3 + i; j++)
+                {
+                    if (ProbabilityOfBoss(i, random))
+                    {
+                        PlaceAgent(AgentType.BigEnemy);
+                    }
+                    else
+                        PlaceAgent(AgentType.SmallEnemy);
+                }
+
+                for (int j = 3; j > i; j--)
+                {
+                    if (ProbabilityOfPowerup(i, random) == 2)
+                    {
+                        PlaceAgent(AgentType.MediumPowerUp);
+                    }
+                    if (ProbabilityOfPowerup(i, random) == 3)
+                    {
+                        PlaceAgent(AgentType.BigPowerUp);
+                    }
+                    else
+                        PlaceAgent(AgentType.SmallPowerUp);
+                }
+            }
         }
 
         private void ChangeLevel()

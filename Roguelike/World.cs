@@ -33,6 +33,14 @@ namespace Roguelike
             return world[pos.X, pos.Y] != null;
         }
 
+        public bool IsOutOfBounds(Position pos)
+        {
+            if (pos.X < 0 || pos.X >= XDim || pos.Y < 0 || pos.Y >= YDim)
+                return true;
+            else
+                return false;
+        }
+
         public void MoveAgent(Agent agent, Position destination)
         {
             world[destination.X, destination.Y] = agent;
