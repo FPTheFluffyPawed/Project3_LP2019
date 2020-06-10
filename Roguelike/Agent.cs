@@ -56,14 +56,15 @@ namespace Roguelike
 
                 // Since the player is forced to move, we check if he ran into
                 // something, and give him a retry to move.
-                if(!world.IsOutOfBounds(destination))
-                    if(world.IsOccupied(destination))
-                    {
-                        if (world.GetAgentAt(destination).Type == AgentType.Obstacle
-                        || world.GetAgentAt(destination).Type == AgentType.SmallEnemy
-                        || world.GetAgentAt(destination).Type == AgentType.BigEnemy)
-                        destination = new Position(-1, -1);
-                    }
+                if(Type == AgentType.Player)
+                    if(!world.IsOutOfBounds(destination))
+                        if(world.IsOccupied(destination))
+                        {
+                            if (world.GetAgentAt(destination).Type == AgentType.Obstacle
+                            || world.GetAgentAt(destination).Type == AgentType.SmallEnemy
+                            || world.GetAgentAt(destination).Type == AgentType.BigEnemy)
+                            destination = new Position(-1, -1);
+                        }
 
             } while (world.IsOutOfBounds(destination));
 
@@ -96,6 +97,16 @@ namespace Roguelike
                 {
                     HP += other.HP;
                 }
+                else if((Type == AgentType.SmallEnemy && other.Type == AgentType.Obstacle)
+                    || (Type == AgentType.BigEnemy && other.Type == AgentType.Obstacle))
+                {
+                    MoveRandomPosition();
+                }
+                else if((Type == AgentType.SmallEnemy && other.Type == Type)
+                    || (Type == AgentType.BigEnemy && other.Type == Type))
+                {
+                    MoveRandomPosition();
+                }
                 else
                 {
                     // Do nothing.
@@ -105,6 +116,38 @@ namespace Roguelike
             // Always reduce the player by 1 HP when he moves.
             if (Type == AgentType.Player)
                 HP--;
+        }
+
+        private void MoveRandomPosition()
+        {
+            Random random = new Random();
+            Position destination;
+
+            do
+            {
+                Direction direction = default;
+                switch (random.Next(4))
+                {
+                    case 0:
+                        direction = Direction.Up;
+                        break;
+                    case 1:
+                        direction = Direction.Down;
+                        break;
+                    case 2:
+                        direction = Direction.Left;
+                        break;
+                    case 3:
+                        direction = Direction.Right;
+                        break;
+                }
+
+                destination = world.GetNeighbor(Pos, direction);
+            } while (world.IsOccupied(destination));
+
+            world.MoveAgent(this, destination);
+
+            Pos = destination;
         }
     }
 }
