@@ -204,6 +204,8 @@ ______                       _     _ _
                             Console.Write(" p ");
                         else if (agent.Type == AgentType.BigPowerUp)
                             Console.Write(" Q ");
+                        else if (agent.Type == AgentType.Obstacle)
+                            Console.Write(" B ");
                     }
                     else
                     {
