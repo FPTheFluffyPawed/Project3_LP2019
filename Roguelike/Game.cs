@@ -16,7 +16,7 @@ namespace Roguelike
 
         private IReadOnlyWorld world;
 
-        public float Level { get; private set; }
+        public int Level { get; private set; }
 
         private bool levelOver;
 
@@ -40,8 +40,6 @@ namespace Roguelike
             random = new Random();
             agents = new List<Agent>();
             scores = new List<Highscore>();
-            sw = new StreamWriter(filename);
-            sr = new StreamReader(filename);
         }
 
         public void Start()
@@ -120,8 +118,7 @@ namespace Roguelike
                 }
             }
 
-            // Ask for highscore here.
-            // < HERE >
+            AddScore();
         }
 
         private void PlaceAgent(AgentType type)
@@ -268,24 +265,36 @@ namespace Roguelike
 
         private void Highscore()
         {
-            // Save highscores in txt file 
-            foreach (Highscore hs in scores)
+            using(sw = new StreamWriter(filename))
             {
-                sw.WriteLine(hs.Name + tab + hs.Score);
+                // Save highscores in txt file 
+                foreach (Highscore hs in scores)
+                {
+                    sw.WriteLine(hs.Name + tab + hs.Score);
+                }
             }
+
+            using(sr = new StreamReader(filename))
+            {
+                while((s = sr.ReadLine()) != null)
+                {
+                    string[] nameAndScore = s.Split(tab);
+                    string name = nameAndScore[0];
+                    float score = Convert.ToInt32(nameAndScore[1]);
+                    Console.WriteLine("Score of {0} is {1}", name, score);            
+                }
+            }
+        }
+
+        private void AddScore()
+        {
+            string sName;
             
-            // Close the file
-            sw.Close();
+            Console.WriteLine("Name: ");
+            sName = Console.ReadLine();
+            Console.WriteLine("Score: ");
 
-            while((s = sr.ReadLine()) != null))
-            {
-                string[] nameAndScore = s.Split(tab);
-                string name = nameAndScore[0];
-                float score = Convert.ToInt32(nameAndScore[1]);
-                Console.WriteLine("Score of {0} is {1}", name, score);
-            }
-
-            sr.Close();
+            scores.Add(new Highscore (sName, Level));
         }
     }
 }
