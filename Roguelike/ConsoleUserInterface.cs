@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace Roguelike
@@ -26,16 +27,20 @@ namespace Roguelike
         // Reference game.
         private Game game;
 
+        private FileReader fr;
+
         /// <summary>
         /// Constructor
         /// </summary>
-        public ConsoleUserInterface(Game game)
+        public ConsoleUserInterface(Game game, IReadOnlyWorld world)
         {
             Console.OutputEncoding = Encoding.UTF8;
 
             Console.CursorVisible = false;
 
             this.game = game;
+
+            fr = new FileReader(this.game, world);
         }
 
         public void Menu()
@@ -104,7 +109,9 @@ ______                       _     _ _
         private void ShowScores()
         {
             Console.Clear();
-            // Read from file and show scores
+
+            fr.OutputScores();
+
             Console.WriteLine("Press any key to return...\n");
             Console.ReadKey(true);
         }
@@ -237,6 +244,11 @@ ______                       _     _ _
         private void SetDefaultColor()
         {
             SetColor(defForeground, defBackground);
+        }
+
+        public void RenderEndGame()
+        {
+            fr.AddScore();
         }
 
         private void AgentColor(AgentType aType)
