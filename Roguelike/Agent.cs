@@ -16,8 +16,14 @@ namespace Roguelike
         // Movement.
         private AbstractMovement moveBehaviour;
 
+        // Random.
+        private Random random;
+
         public Agent(Position pos, AgentType type, World world)
         {
+            // Random.
+            random = new Random();
+
             Pos = pos;
             Type = type;
             this.world = world;
@@ -134,7 +140,6 @@ namespace Roguelike
 
         private void MoveRandomPosition()
         {
-            Random random = new Random();
             Position destination;
 
             do
@@ -169,7 +174,6 @@ namespace Roguelike
             world.End = false;
             if (Type == AgentType.Player)
             {
-                Random random = new Random();
                 Position pos = new Position(random.Next(world.XDim), 0);
                 world.MoveAgent(this, pos);
                 Pos = pos;

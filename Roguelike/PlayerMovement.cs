@@ -13,13 +13,13 @@ namespace Roguelike
 
         public override Position WhereToMove(Agent agent)
         {
-            Direction direction = InputDirection(agent);
+            Direction direction = InputDirection();
 
             return world.GetNeighbor(agent.Pos, direction);
         }
 
         // Place this in console interface later
-        private Direction InputDirection(Agent agent)
+        private Direction InputDirection()
         {
             Direction dir = Direction.None;
 
