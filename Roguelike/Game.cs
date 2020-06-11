@@ -15,6 +15,8 @@ namespace Roguelike
 
         public float Level { get; private set; }
 
+        private bool levelOver;
+
         private bool gameOver;
 
         private Random random;
@@ -38,17 +40,17 @@ namespace Roguelike
         {
             world.Clear();
             agents.Clear();
+            gameOver = false;
             Play();
         }
 
         private void Play()
         {
-            
             Console.Clear();
 
-            for (int i = 0; i < float.PositiveInfinity; i++)
+            for (int i = 0; i < float.PositiveInfinity && !gameOver; i++)
             {
-                gameOver = false;
+                levelOver = false;
                 Level = i;
 
                 PlaceAgent(AgentType.Exit);
@@ -57,7 +59,7 @@ namespace Roguelike
 
                 ui.RenderWorld(world);
 
-                while (gameOver == false)
+                while (levelOver == false)
                 {
                     // Run through all agents and check
                     foreach (Agent a in agents)
@@ -70,48 +72,43 @@ namespace Roguelike
                             {
                                 for (int j = 0; j < 2; j++)
                                 {
-                                    if(gameOver != true)
+                                    if(levelOver != true && !IsPlayerDead())
                                     {
                                         a.PlayTurn();
                                         ui.RenderWorld(world);
                                         if (world.End == true)
                                         {
-                                            gameOver = true;
+                                            levelOver = true;
                                         }
                                     }
                                 }
                             }
                             else
-                                if (gameOver != true)
+                                if (levelOver != true && !IsPlayerDead())
                                     a.PlayTurn();
                         }
                         ui.RenderWorld(world);
                     }
+
                     ui.RenderWorld(world);
-                    if (gameOver == true)
+
+                    if (levelOver == true)
                     {
                         world.LevelClear();
                         ResetPlayer();
                         Thread.Sleep(1000);
                     }
+
+                    if (IsPlayerDead())
+                    {
+                        gameOver = true;
+                        break;
+                    }
                 }
-
-                // and then start the loop.
-
-                // This will clear any past games (if they exist) and set it up.
-
-                // Start playing the game from here on out!
-                // Console.WriteLine("\nGame!\n");
-
-                // Game Loop
-                // Render board
-                // Check if player is dead (to then break out of the loop)
-                // Check if the player is on the exit level tile
-                // Play out turns
-
-                // When the player enters the exit tile, immediately setup a new level
-                // and then it plays out like normally, except it'll be the player's turn
             }
+
+            // Ask for highscore here.
+            // < HERE >
         }
 
         private void PlaceAgent(AgentType type)
@@ -155,7 +152,6 @@ namespace Roguelike
                     } while (world.IsOccupied(pos));
 
                     agent = new Agent(pos, type, (World)world);
-                    //agents.Add(agent);
                     break;
                 default:
                     do
@@ -174,9 +170,7 @@ namespace Roguelike
         private void GenerateLevel(int level)
         {
             if (level == 0)
-            {
                 PlaceAgent(AgentType.Player);
-            }
 
             // Setup the level for the first time...
             for (int j = 0; j < 3 + level; j++)
@@ -210,9 +204,12 @@ namespace Roguelike
             agents.Find(a => a.Type == AgentType.Player).ResetPlayerPos();
         }
 
-        private void DifficultyScale()
+        private bool IsPlayerDead()
         {
-
+            if (PlayerHP <= 0)
+                return true;
+            else
+                return false;
         }
         private bool ProbabilityOfBoss(int level, Random random)
         {
