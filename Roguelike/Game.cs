@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -7,13 +8,15 @@ namespace Roguelike
 {
     public class Game
     {
+        const string filename = "highscores.txt";
+        const char tab = '\t';
         public int PlayerHP => agents.Find(a => a.Type == AgentType.Player).HP;
 
         private ConsoleUserInterface ui;
 
         private IReadOnlyWorld world;
 
-        public float Level { get; private set; }
+        public int Level { get; private set; }
 
         private bool levelOver;
 
@@ -23,12 +26,20 @@ namespace Roguelike
 
         private List<Agent> agents;
 
+        StreamWriter sw;
+        StreamReader sr;
+        List<Highscore> scores;
+
+        string s;
+
+
         public Game(int x, int y) 
         {
             ui = new ConsoleUserInterface(this);
             world = new World(x, y);
             random = new Random();
             agents = new List<Agent>();
+            scores = new List<Highscore>();
         }
 
         public void Start()
@@ -105,8 +116,7 @@ namespace Roguelike
                 }
             }
 
-            // Ask for highscore here.
-            // < HERE >
+            AddScore();
         }
 
         private void PlaceAgent(AgentType type)
@@ -251,6 +261,40 @@ namespace Roguelike
             }
             //returns the small powerup
             return 1;
+        }
+
+        private void Highscore()
+        {
+            using(sw = new StreamWriter(filename))
+            {
+                // Save highscores in txt file 
+                foreach (Highscore hs in scores)
+                {
+                    sw.WriteLine(hs.Name + tab + hs.Score);
+                }
+            }
+
+            using(sr = new StreamReader(filename))
+            {
+                while((s = sr.ReadLine()) != null)
+                {
+                    string[] nameAndScore = s.Split(tab);
+                    string name = nameAndScore[0];
+                    float score = Convert.ToInt32(nameAndScore[1]);
+                    Console.WriteLine("Score of {0} is {1}", name, score);            
+                }
+            }
+        }
+
+        private void AddScore()
+        {
+            string sName;
+            
+            Console.WriteLine("Name: ");
+            sName = Console.ReadLine();
+            Console.WriteLine("Score: ");
+
+            scores.Add(new Highscore (sName, Level));
         }
     }
 }
