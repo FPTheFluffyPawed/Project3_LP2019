@@ -20,6 +20,14 @@ namespace Roguelike
         private readonly ConsoleColor obstacleColor = ConsoleColor.DarkGreen;
         private readonly ConsoleColor titleColor = ConsoleColor.DarkGray;
 
+        // Unicode char
+        private readonly char blockedTile = '\u25A0';
+        private readonly char upArrow = '\u2191';
+        private readonly char leftArrow = '\u2190';
+        private readonly char downArrow = '\u2193';
+        private readonly char rightArrow = '\u2192';
+
+
         // other variables
         private ConsoleKeyInfo cki;
 
@@ -191,24 +199,49 @@ ______                       _     _ _
                         Agent agent = world.GetAgentAt(pos);
 
                         if (agent.Type == AgentType.Player)
+                        {
+                            AgentColor(agent.Type);
                             Console.Write(" P ");
+                        }
                         else if (agent.Type == AgentType.Exit)
+                        {
+                            AgentColor(agent.Type);
                             Console.Write(" O ");
+                        }
                         else if (agent.Type == AgentType.SmallEnemy)
+                        {
+                            AgentColor(agent.Type);
                             Console.Write(" e ");
+                        }
                         else if (agent.Type == AgentType.BigEnemy)
+                        {
+                            AgentColor(agent.Type);
                             Console.Write(" E ");
+                        }
                         else if (agent.Type == AgentType.SmallPowerUp)
+                        {
+                            AgentColor(agent.Type);
                             Console.Write(" q ");
+                        }
                         else if (agent.Type == AgentType.MediumPowerUp)
+                        {
+                            AgentColor(agent.Type);
                             Console.Write(" p ");
+                        }
                         else if (agent.Type == AgentType.BigPowerUp)
+                        {
+                            AgentColor(agent.Type);
                             Console.Write(" Q ");
+                        }
                         else if (agent.Type == AgentType.Obstacle)
-                            Console.Write(" B ");
-                    }
+                        {
+                            AgentColor(agent.Type);
+                            Console.Write(" {0} ", blockedTile);
+                        }
+                    } 
                     else
                     {
+                        SetDefaultColor();
                         Console.Write(" . ");
                     }
                 }
@@ -219,11 +252,70 @@ ______                       _     _ _
 
         private void RenderInterface(IReadOnlyWorld world)
         {
-            Console.SetCursorPosition(0 + world.XDim * 3, 0);
+            Console.SetCursorPosition(0 + world.XDim * 4, 0);
             Console.Write("Your health: " + game.PlayerHP + " HP.");
 
-            Console.SetCursorPosition(0 + world.XDim * 3, 1);
+            Console.SetCursorPosition(0 + world.XDim * 4, 1);
             Console.Write("Current level : " + game.Level);
+
+            Console.SetCursorPosition(0 + world.XDim * 4, 2);
+            SetColor(playerColor, 0);
+            Console.Write("P");
+            SetDefaultColor();
+            Console.Write(" - player");
+            
+            Console.SetCursorPosition(0 + world.XDim * 4, 3);
+            SetColor(fgExitColor, 0);
+            Console.Write("O");
+            SetDefaultColor();
+            Console.Write(" - Objective");
+
+            Console.SetCursorPosition(0 + world.XDim * 4, 4);
+            SetColor(enemyColor, 0);
+            Console.Write("e");
+            SetDefaultColor();
+            Console.Write(" - Enemy");
+
+            Console.SetCursorPosition(0 + world.XDim * 4, 5);
+            SetColor(enemyColor, 0);
+            Console.Write("E");
+            SetDefaultColor();
+            Console.Write(" - Boss");
+
+            Console.SetCursorPosition(0 + world.XDim * 4, 6);
+            SetColor(powerUpColor, 0);
+            Console.Write("q");
+            SetDefaultColor();
+            Console.Write(" - Small PowerUp");
+
+            Console.SetCursorPosition(0 + world.XDim * 4, 7);
+            SetColor(powerUpColor, 0);
+            Console.Write("p");
+            SetDefaultColor();
+            Console.Write(" - PowerUp");
+
+            Console.SetCursorPosition(0 + world.XDim * 4, 8);
+            SetColor(powerUpColor, 0);
+            Console.Write("Q");
+            SetDefaultColor();
+            Console.Write(" - Big PowerUp");
+
+            Console.SetCursorPosition(0 + world.XDim * 4, 9);
+            SetColor(obstacleColor, 0);
+            Console.Write("{0}", blockedTile);
+            SetDefaultColor();
+            Console.Write(" - Wall");
+
+            Console.SetCursorPosition(0 + world.XDim * 4, 12);
+            Console.Write("          UP     ");
+            Console.SetCursorPosition(0 + world.XDim * 4, 13);
+            Console.Write("          {0}     ", upArrow);
+            Console.SetCursorPosition(0 + world.XDim * 4, 14);
+            Console.Write("LEFT {0}         {1} RIGHT", leftArrow, rightArrow);
+            Console.SetCursorPosition(0 + world.XDim * 4, 15);
+            Console.Write("          {0}     ", downArrow);
+            Console.SetCursorPosition(0 + world.XDim * 4, 16);
+            Console.Write("         DOWN     ");
 
             Console.SetCursorPosition(0, world.YDim);
         }
@@ -243,13 +335,15 @@ ______                       _     _ _
         {
             if (aType == AgentType.Player) SetColor(playerColor, 0);
             else if (aType == AgentType.SmallEnemy || aType == AgentType.BigEnemy)
-                SetColor(playerColor, 0);
+                SetColor(enemyColor, 0);
             else if (aType == AgentType.SmallPowerUp
             || aType == AgentType.MediumPowerUp
             || aType == AgentType.BigPowerUp) SetColor(powerUpColor, 0);
             else if (aType == AgentType.Obstacle)
-                SetColor(0, obstacleColor);
+                SetColor(obstacleColor, 0);
             else if (aType == AgentType.Exit) SetColor(fgExitColor, bgExitColor);
+            else 
+                SetDefaultColor();
         }
     }
 }
