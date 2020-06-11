@@ -51,8 +51,6 @@ namespace Roguelike
                 gameOver = false;
                 Level = i;
 
-                PlaceAgent(AgentType.Exit);
-
                 GenerateLevel(i);
 
                 ui.RenderWorld(world);
@@ -95,6 +93,7 @@ namespace Roguelike
                         Thread.Sleep(1000);
                     }
                 }
+
 
                 // and then start the loop.
 
@@ -173,15 +172,26 @@ namespace Roguelike
 
         private void GenerateLevel(int level)
         {
+            int obs, pow;
+            obs = random.Next(0, (Math.Min(world.XDim,world.YDim))-1);
+            pow = random.Next(2, Math.Max(world.XDim, world.YDim));
+
             if (level == 0)
             {
                 PlaceAgent(AgentType.Player);
             }
 
-            // Setup the level for the first time...
-            for (int j = 0; j < 3 + level; j++)
+            PlaceAgent(AgentType.Exit);
+
+            for (int j = 0; j < obs; j++)
             {
-                if (ProbabilityOfBoss(level, random))
+                    PlaceAgent(AgentType.Obstacle);
+            }
+
+            // Setup the level for the first time...
+            for (int j = 0; j < 3 + level && j <= world.XDim * world.YDim / 2; j++)
+            {
+                if (ProbabilityOfBoss(level))
                 {
                     PlaceAgent(AgentType.BigEnemy);
                 }
@@ -189,13 +199,13 @@ namespace Roguelike
                     PlaceAgent(AgentType.SmallEnemy);
             }
 
-            for (int j = 3; j > level; j--)
+            for (int j = 0; j < pow; j++)
             {
-                if (ProbabilityOfPowerup(level, random) == 2)
+                if (ProbabilityOfPowerup(level) == 2)
                 {
                     PlaceAgent(AgentType.MediumPowerUp);
                 }
-                if (ProbabilityOfPowerup(level, random) == 3)
+                if (ProbabilityOfPowerup(level) == 3)
                 {
                     PlaceAgent(AgentType.BigPowerUp);
                 }
@@ -214,16 +224,10 @@ namespace Roguelike
         {
 
         }
-        private bool ProbabilityOfBoss(int level, Random random)
+        private bool ProbabilityOfBoss(int level)
         {
-            int divider = 10 - level;
-
-            if (divider <= 0)
-            {
-                divider = 0;
-            }
-            float ProbofBoss = 1f / divider;
-            float ProbTry = 1f / random.Next(1,level + 1);
+            float ProbofBoss = 1 + level;
+            float ProbTry = random.Next(1,10);
 
             if (ProbTry <= ProbofBoss)
             {
@@ -232,15 +236,12 @@ namespace Roguelike
             return false;
         }
 
-        private int ProbabilityOfPowerup(int level, Random random)
+        private int ProbabilityOfPowerup(int level)
         {
-            int bigDivider = level + 3;
-            int medDivider = level + 2;
+            float probOfMed = 7;
+            float probOfBig = 5;
 
-            float probOfMed = 1f/medDivider;
-            float probOfBig = 1f/bigDivider;
-
-            float probTry = 1f / random.Next(1, level + 1);
+            float probTry = random.Next(1, 10 + level);
 
             if (probOfBig >= probTry)
             {
