@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -7,6 +8,8 @@ namespace Roguelike
 {
     public class Game
     {
+        const string filename = "highscores.txt";
+        const char tab = '\t';
         public int PlayerHP => agents.Find(a => a.Type == AgentType.Player).HP;
 
         private ConsoleUserInterface ui;
@@ -21,12 +24,22 @@ namespace Roguelike
 
         private List<Agent> agents;
 
+        StreamWriter sw;
+        StreamReader sr;
+        List<Highscore> scores;
+
+        string s;
+
+
         public Game(int x, int y) 
         {
             ui = new ConsoleUserInterface(this);
             world = new World(x, y);
             random = new Random();
             agents = new List<Agent>();
+            scores = new List<Highscore>();
+            sw = new StreamWriter(filename);
+            sr = new StreamReader(filename);
         }
 
         public void Start()
@@ -254,6 +267,28 @@ namespace Roguelike
             }
             //returns the small powerup
             return 1;
+        }
+
+        private void Highscore()
+        {
+            // Save highscores in txt file 
+            foreach (Highscore hs in scores)
+            {
+                sw.WriteLine(hs.Name + tab + hs.Score);
+            }
+            
+            // Close the file
+            sw.Close();
+
+            while((s = sr.ReadLine()) != null))
+            {
+                string[] nameAndScore = s.Split(tab);
+                string name = nameAndScore[0];
+                float score = Convert.ToInt32(nameAndScore[1]);
+                Console.WriteLine("Score of {0} is {1}", name, score);
+            }
+
+            sr.Close();
         }
     }
 }
