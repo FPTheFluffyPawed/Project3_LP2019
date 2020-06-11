@@ -112,11 +112,10 @@ namespace Roguelike
                 // Check if the player is on the exit level tile
                 // Play out turns
 
-                    if (IsPlayerDead())
-                    {
-                        gameOver = true;
-                        break;
-                    }
+                if (IsPlayerDead())
+                {
+                    gameOver = true;
+                    break;
                 }
             }
 
