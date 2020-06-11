@@ -14,14 +14,9 @@ namespace Roguelike
             Score = score;
         }
 
-        public int CompareTo(Highscore obj)
+        public int CompareTo(Highscore hs)
         {
-            if(!obj.Equals(this)) return 1;
-            Highscore otherHighscore = obj;
-            if(otherHighscore.Equals(this))
-                return otherHighscore.Score.CompareTo(this.Score);
-            else
-                throw new ArgumentException("Object is not highscore");
+            return hs.Score.CompareTo(Score);
         }
     }
 }

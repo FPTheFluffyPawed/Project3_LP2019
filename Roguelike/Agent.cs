@@ -162,7 +162,11 @@ namespace Roguelike
                 }
 
                 destination = world.GetNeighbor(Pos, direction);
-            } while (world.IsOccupied(destination));
+
+                if (!world.IsOutOfBounds(destination))
+                    if (world.IsOccupied(destination))
+                        destination = new Position(-1, -1);
+            } while (world.IsOutOfBounds(destination));
 
             world.MoveAgent(this, destination);
 

@@ -18,7 +18,6 @@ namespace Roguelike
             return world.GetNeighbor(agent.Pos, direction);
         }
 
-        // Place this in console interface later
         private Direction InputDirection()
         {
             Direction dir = Direction.None;
