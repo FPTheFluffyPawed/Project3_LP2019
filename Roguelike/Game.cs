@@ -96,26 +96,12 @@ namespace Roguelike
                         ResetPlayer();
                         Thread.Sleep(1000);
                     }
-                }
 
-
-                // and then start the loop.
-
-                // This will clear any past games (if they exist) and set it up.
-
-                // Start playing the game from here on out!
-                // Console.WriteLine("\nGame!\n");
-
-                // Game Loop
-                // Render board
-                // Check if player is dead (to then break out of the loop)
-                // Check if the player is on the exit level tile
-                // Play out turns
-
-                if (IsPlayerDead())
-                {
-                    gameOver = true;
-                    break;
+                    if (IsPlayerDead())
+                    {
+                        gameOver = true;
+                        break;
+                    }
                 }
             }
 
