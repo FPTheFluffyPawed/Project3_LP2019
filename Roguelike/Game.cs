@@ -6,24 +6,57 @@ using System.Threading;
 
 namespace Roguelike
 {
+    /// <summary>
+    /// Game class that takes care of the Game logic.
+    /// </summary>
     public class Game
     {
+        /// <summary>
+        /// Property that searches for the Player in the list, and when finding
+        /// returns the player health.
+        /// </summary>
         public int PlayerHP => agents.Find(a => a.Type == AgentType.Player).HP;
 
+        /// <summary>
+        /// Instance variable for the user interface.
+        /// </summary>
         private ConsoleUserInterface ui;
 
+        /// <summary>
+        /// Instance variable for the read-only world.
+        /// </summary>
         private IReadOnlyWorld world;
 
+        /// <summary>
+        /// Property for the current level.
+        /// </summary>
         public int Level { get; private set; }
 
+        /// <summary>
+        /// Boolean to check if the level is over.
+        /// </summary>
         private bool levelOver;
 
+        /// <summary>
+        /// Boolean to check if the game is over.
+        /// </summary>
         private bool gameOver;
 
+        /// <summary>
+        /// Instance variable for a Random.
+        /// </summary>
         private Random random;
 
+        /// <summary>
+        /// Instance variable for the list of Agent.
+        /// </summary>
         private List<Agent> agents;
 
+        /// <summary>
+        /// Constructor to create a game.
+        /// </summary>
+        /// <param name="x">X/Row.</param>
+        /// <param name="y">Y/Column.</param>
         public Game(int x, int y) 
         {
             world = new World(x, y);
@@ -32,11 +65,15 @@ namespace Roguelike
             agents = new List<Agent>();
         }
 
+        /// <summary>
+        /// Start the Game by accessing the Menu.
+        /// </summary>
         public void Start()
         {
             ui.Menu();
         }
 
+        // Start a new game to play through, clearing out any previous ones.
         public void NewGame()
         {
             world.Clear();
@@ -45,22 +82,28 @@ namespace Roguelike
             Play();
         }
 
+        /// <summary>
+        /// Method that plays out the game.
+        /// </summary>
         private void Play()
         {
+            // Clear the Console.
             Console.Clear();
 
+            // Play the game out infinitely until the game is over.
             for (int i = 0; i < float.PositiveInfinity && !gameOver; i++)
             {
                 levelOver = false;
                 Level = i;
 
+                // Generate a new level.
                 GenerateLevel(i);
 
                 ui.RenderWorld(world);
 
                 while (levelOver == false)
                 {
-                    // Run through all agents and check
+                    // Run through all agents and check for them.
                     foreach (Agent a in agents)
                     {
                         if (a.Type == AgentType.Player
@@ -69,6 +112,7 @@ namespace Roguelike
                         {
                             if (a.Type == AgentType.Player)
                             {
+                                // The player gets two turns for movement.
                                 for (int j = 0; j < 2; j++)
                                 {
                                     if(levelOver != true && !IsPlayerDead())
@@ -91,6 +135,7 @@ namespace Roguelike
 
                     ui.RenderWorld(world);
 
+                    // If the level is over, clear the level and go next level.
                     if (levelOver == true)
                     {
                         world.LevelClear();
@@ -98,6 +143,7 @@ namespace Roguelike
                         Thread.Sleep(1000);
                     }
 
+                    // If the player is dead, mark the game as over.
                     if (IsPlayerDead())
                     {
                         gameOver = true;
@@ -106,23 +152,16 @@ namespace Roguelike
                 }
             }
 
+            // Once we're out of the game, show the final screen.
             ui.RenderEndGame();
         }
 
+        /// <summary>
+        /// Method to place an Agent in the game.
+        /// </summary>
+        /// <param name="type">The type of Agent.</param>
         private void PlaceAgent(AgentType type)
         {
-            /*
-             * In this method we'll place the agents in the level
-             * which means we place the player, exit, obstacles, powerups,
-             * and finally enemies.
-             * 
-             * This is also for "resetting" the level, so we will check what
-             * level we are at. If we're at level 0, clear all slots first
-             * to start a new game, basically.
-             * 
-             * It really does just that.
-             */
-
             Position pos;
 
             Agent agent;
@@ -130,7 +169,7 @@ namespace Roguelike
             switch(type)
             {
                 case AgentType.Player:
-                    // Place player in the first column
+                    // Place player in the first column.
                     do
                     {
                         pos = new Position(
@@ -142,6 +181,7 @@ namespace Roguelike
                     agents.Add(agent);
                     break;
                 case AgentType.Exit:
+                    // Place the exit in the last column.
                     do
                     {
                         pos = new Position(
@@ -152,6 +192,7 @@ namespace Roguelike
                     agent = new Agent(pos, type, (World)world);
                     break;
                 default:
+                    // Place in a random position.
                     do
                     {
                         pos = new Position(
@@ -165,23 +206,30 @@ namespace Roguelike
             }
         }
 
+        /// <summary>
+        /// Generate a new level based on the current level we're in.
+        /// </summary>
+        /// <param name="level"></param>
         private void GenerateLevel(int level)
         {
             int obs, pow;
             obs = random.Next(0, (Math.Min(world.XDim,world.YDim))-1);
             pow = random.Next(2, Math.Max(world.XDim, world.YDim));
 
+            // If it's the first level, place a new player.
             if (level == 0)
                 PlaceAgent(AgentType.Player);
 
+            // Place the exit.
             PlaceAgent(AgentType.Exit);
 
+            // Place the objects.
             for (int j = 0; j < obs; j++)
             {
                     PlaceAgent(AgentType.Obstacle);
             }
 
-            // Setup the level for the first time...
+            // Setup the enemies...
             for (int j = 0; j < 3 + level && j <= world.XDim * world.YDim / 2; j++)
             {
                 if (ProbabilityOfBoss(level))
@@ -192,6 +240,7 @@ namespace Roguelike
                     PlaceAgent(AgentType.SmallEnemy);
             }
 
+            // Setup the powerups...
             for (int j = 0; j < pow; j++)
             {
                 if (ProbabilityOfPowerup(level) == 2)
@@ -207,12 +256,20 @@ namespace Roguelike
             }
         }
 
+        /// <summary>
+        /// When the level changes, clear out the agent list and place the
+        /// player in the starting column.
+        /// </summary>
         private void ResetPlayer()
         {
             agents.RemoveAll(a => a.Type != AgentType.Player);
             agents.Find(a => a.Type == AgentType.Player).ResetPlayerPos();
         }
 
+        /// <summary>
+        /// Method that checks if the player's health is below or equal to 0.
+        /// </summary>
+        /// <returns>True if yes, false if not.</returns>
         private bool IsPlayerDead()
         {
             if (PlayerHP <= 0)
@@ -220,6 +277,13 @@ namespace Roguelike
             else
                 return false;
         }
+
+        /// <summary>
+        /// Method that returns if it will be a boss or not based on
+        /// probability.
+        /// </summary>
+        /// <param name="level">Current level.</param>
+        /// <returns>True or false.</returns>
         private bool ProbabilityOfBoss(int level)
         {
             float ProbofBoss = 1 + level;
@@ -232,6 +296,11 @@ namespace Roguelike
             return false;
         }
 
+        /// <summary>
+        /// Method that returns the probability of a PowerUp.
+        /// </summary>
+        /// <param name="level">Current level.</param>
+        /// <returns>Probability of PowerUp.</returns>
         private int ProbabilityOfPowerup(int level)
         {
             float probOfMed = 7;

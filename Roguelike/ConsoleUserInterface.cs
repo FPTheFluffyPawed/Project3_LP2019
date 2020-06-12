@@ -5,12 +5,12 @@ using System.Text;
 
 namespace Roguelike
 {
+    /// <summary>
+    /// Class that contains all that takes care of rendering out the Console.
+    /// </summary>
     public class ConsoleUserInterface
     {
-        // Empty space
-        private const string EMPTY = null;
-
-        // Colors
+        // Colors.
         private readonly ConsoleColor defBackground = Console.BackgroundColor;
         private readonly ConsoleColor defForeground = Console.ForegroundColor;
         private readonly ConsoleColor playerColor = ConsoleColor.Yellow;
@@ -21,7 +21,7 @@ namespace Roguelike
         private readonly ConsoleColor obstacleColor = ConsoleColor.DarkGreen;
         private readonly ConsoleColor titleColor = ConsoleColor.DarkGray;
 
-        // Unicode char
+        // Unicode chars.
         private readonly char blockedTile = '\u25A0';
         private readonly char upArrow = '\u2191';
         private readonly char leftArrow = '\u2190';
@@ -29,17 +29,26 @@ namespace Roguelike
         private readonly char rightArrow = '\u2192';
 
 
-        // other variables
+        /// <summary>
+        /// Current console key that is pressed. Auxilary variable.
+        /// </summary>
         private ConsoleKeyInfo cki;
 
-        // Reference game.
+        /// <summary>
+        /// Instance variable for use as reference to the game.
+        /// </summary>
         private Game game;
 
+        /// <summary>
+        /// Instance variable to the file reading class.
+        /// </summary>
         private FileReader fr;
 
         /// <summary>
-        /// Constructor
+        /// Constructor to create a UI.
         /// </summary>
+        /// <param name="game">Reference to the game's properties.</param>
+        /// <param name="world">Reference to a read-only world.</param>
         public ConsoleUserInterface(Game game, IReadOnlyWorld world)
         {
             Console.OutputEncoding = Encoding.UTF8;
@@ -51,6 +60,9 @@ namespace Roguelike
             fr = new FileReader(this.game, world);
         }
 
+        /// <summary>
+        /// Shows the menu.
+        /// </summary>
         public void Menu()
         {
             bool loop = true;
@@ -104,6 +116,9 @@ ______                       _     _ _
             }
         }
 
+        /// <summary>
+        /// Launches the game.
+        /// </summary>
         private void PlayGame()
         {
             Console.Clear();
@@ -114,6 +129,9 @@ ______                       _     _ _
             Console.ReadKey(true);
         }
 
+        /// <summary>
+        /// Shows the scores.
+        /// </summary>
         private void ShowScores()
         {
             Console.Clear();
@@ -124,6 +142,9 @@ ______                       _     _ _
             Console.ReadKey(true);
         }
 
+        /// <summary>
+        /// Shows the instructions to the game.
+        /// </summary>
         private void ShowIntructions()
         {
             SetColor(titleColor, defBackground);
@@ -159,6 +180,9 @@ ______                       _     _ _
             Console.ReadKey(true);
         }
 
+        /// <summary>
+        /// Shows the credits.
+        /// </summary>
         private void ShowCredits()
         {
 
@@ -179,12 +203,18 @@ ______                       _     _ _
             Console.ReadKey(true);
         }
 
+        /// <summary>
+        /// Closes the program.
+        /// </summary>
         private void ExitGame()
         {
             Console.WriteLine("\nCLOSING...");
             Environment.Exit(1);
         }
 
+        /// <summary>
+        /// Shows the error message.
+        /// </summary>
         private void ErrorOption()
         {
             Console.WriteLine("\nInsert a valid option!\n");
@@ -192,6 +222,10 @@ ______                       _     _ _
             Console.ReadKey(true);
         }
 
+        /// <summary>
+        /// Renders the world and outputs it as a board.
+        /// </summary>
+        /// <param name="world">Read-only world reference.</param>
         public void RenderWorld(IReadOnlyWorld world)
         {
             Console.SetCursorPosition(0, 0);
@@ -257,6 +291,10 @@ ______                       _     _ _
             RenderInterface(world);
         }
 
+        /// <summary>
+        /// Renders the interface to the side of the board.
+        /// </summary>
+        /// <param name="world">Read-only world reference.</param>
         private void RenderInterface(IReadOnlyWorld world)
         {
             Console.SetCursorPosition(0 + world.XDim * 4, 0);
@@ -327,22 +365,37 @@ ______                       _     _ _
             Console.SetCursorPosition(0, world.YDim);
         }
 
+        /// <summary>
+        /// Method that sets the color.
+        /// </summary>
+        /// <param name="fgColor">Color of the text.</param>
+        /// <param name="bgColor">Color of the background.</param>
         private void SetColor(ConsoleColor fgColor, ConsoleColor bgColor)
         {
             Console.BackgroundColor = bgColor;
             Console.ForegroundColor = fgColor;
         }
 
+        /// <summary>
+        /// Method to set the default color of the Console.
+        /// </summary>
         private void SetDefaultColor()
         {
             SetColor(defForeground, defBackground);
         }
 
+        /// <summary>
+        /// Method that renders the end of the game menu.
+        /// </summary>
         public void RenderEndGame()
         {
             fr.AddScore();
         }
 
+        /// <summary>
+        /// Method that sets the color based on the type of Agent.
+        /// </summary>
+        /// <param name="aType">The type to check.</param>
         private void AgentColor(AgentType aType)
         {
             if (aType == AgentType.Player) SetColor(playerColor, 0);
