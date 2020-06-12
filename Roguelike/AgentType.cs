@@ -4,6 +4,9 @@ using System.Text;
 
 namespace Roguelike
 {
+    /// <summary>
+    /// Enum that contains all types of Agent.
+    /// </summary>
     public enum AgentType
     {
         Player,

@@ -4,21 +4,49 @@ using System.Text;
 
 namespace Roguelike
 {
+    /// <summary>
+    /// Class that represents an agent.
+    /// </summary>
     public class Agent
     {
+        /// <summary>
+        /// Auto-implemented property that represents an Agent's current HP.
+        /// </summary>
         public int HP { get; private set; }
+
+        /// <summary>
+        /// Auto-implemented property that represents an Agent's
+        /// current position.
+        /// </summary>
         public Position Pos { get; private set; }
+
+        /// <summary>
+        /// Auto-implemented property that represents an Agent's type.
+        /// </summary>
         public AgentType Type { get; private set; }
 
-        // Use this just for reference to the methods.
+        /// <summary>
+        /// Instance variable to the world.
+        /// </summary>
         private World world;
 
-        // Movement.
+        /// <summary>
+        /// Instance variable that determines the movement to be done by the
+        /// Agent.
+        /// </summary>
         private AbstractMovement moveBehaviour;
 
-        // Random.
+        /// <summary>
+        /// Instance variable for a Random to be used for rolls.
+        /// </summary>
         private Random random;
 
+        /// <summary>
+        /// Constructor for creating an Agent.
+        /// </summary>
+        /// <param name="pos">Initial position.</param>
+        /// <param name="type">The type of Agent based on AgentType.</param>
+        /// <param name="world">Reference to the world.</param>
         public Agent(Position pos, AgentType type, World world)
         {
             // Random.
@@ -28,6 +56,7 @@ namespace Roguelike
             Type = type;
             this.world = world;
 
+            // Assign different values based on what type of Agent it is.
             switch (type)
             {
                 case AgentType.Player:
@@ -60,6 +89,9 @@ namespace Roguelike
             world.AddAgent(this);
         }
 
+        /// <summary>
+        /// Method to call for playing an Agent's turn.
+        /// </summary>
         public void PlayTurn()
         {
             Position destination;
@@ -104,9 +136,9 @@ namespace Roguelike
                 // If we're the player and we enter the exit, change level!
                 else if (Type == AgentType.Player && other.Type == AgentType.Exit)
                 {
-                    // Change level! Probably call world's level change method?
                     world.End = true;
                 }
+                // If we're the player and bump into a PowerUp, get HP.
                 else if ((Type == AgentType.Player && other.Type == AgentType.SmallPowerUp)
                     || (Type == AgentType.Player && other.Type == AgentType.MediumPowerUp)
                     || (Type == AgentType.Player && other.Type == AgentType.BigPowerUp))
@@ -117,11 +149,13 @@ namespace Roguelike
                     Pos = destination;
 
                 }
+                // If we're an enemy and run into an obstacle, move randomly.
                 else if((Type == AgentType.SmallEnemy && other.Type == AgentType.Obstacle)
                     || (Type == AgentType.BigEnemy && other.Type == AgentType.Obstacle))
                 {
                     MoveRandomPosition();
                 }
+                // If we're an enemy and run into another, move randomly.
                 else if((Type == AgentType.SmallEnemy && other.Type == Type)
                     || (Type == AgentType.BigEnemy && other.Type == Type))
                 {
@@ -138,6 +172,9 @@ namespace Roguelike
                 HP--;
         }
 
+        /// <summary>
+        /// Method that makes the Agent move in a random direction.
+        /// </summary>
         private void MoveRandomPosition()
         {
             Position destination;
@@ -173,6 +210,10 @@ namespace Roguelike
             Pos = destination;
         }
 
+        /// <summary>
+        /// Method that resets the player Agent's position to the starting
+        /// line. Used for when starting a new level.
+        /// </summary>
         public void ResetPlayerPos()
         {
             world.End = false;
