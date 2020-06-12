@@ -12,7 +12,7 @@
 
 **João Dias (a21803573)**
 
-- .
+- Trabalhou em geração procidemental, as opções na invocação do programa, progressão de niveis, na classe game, world, agent e program.
 
 [Repositório Git público.](https://github.com/FPTheFluffyPawed/Project3_LP2019)
 
