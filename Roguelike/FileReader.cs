@@ -54,7 +54,7 @@ namespace Roguelike
         {
             StringBuilder sb = new StringBuilder("highscores");
 
-            sb.AppendFormat($"-{world.XDim}{world.YDim}.txt");
+            sb.AppendFormat($"-{world.XDim}x{world.YDim}.txt");
 
             filename = sb.ToString();
 
